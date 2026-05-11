@@ -61,6 +61,13 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme inline {
+  --color-impala: var(--impala);
+  --color-impala-foreground: var(--impala-foreground);
+  --color-soul: var(--soul);
+  --color-soul-foreground: var(--soul-foreground);
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
