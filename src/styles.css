@@ -97,6 +97,16 @@
   --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
+  /* AddVal brand tokens (hex equivalents kept as comments)
+     Impala red  #D41E28
+     Soul purple #6C3483 */
+  :root {
+    --impala: oklch(0.553 0.214 27.5);
+    --impala-foreground: oklch(1 0 0);
+    --soul: oklch(0.418 0.155 322);
+    --soul-foreground: oklch(1 0 0);
+  }
+
 .dark {
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
