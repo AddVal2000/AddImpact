@@ -14,7 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      communities: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          goal_kes: number | null
+          goal_label: string | null
+          id: string
+          name: string
+          phase: number | null
+          raised_kes: number | null
+          slug: string
+          theme: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          goal_kes?: number | null
+          goal_label?: string | null
+          id?: string
+          name: string
+          phase?: number | null
+          raised_kes?: number | null
+          slug: string
+          theme: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          goal_kes?: number | null
+          goal_label?: string | null
+          id?: string
+          name?: string
+          phase?: number | null
+          raised_kes?: number | null
+          slug?: string
+          theme?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          community_id: string | null
+          created_at: string | null
+          id: string
+          miles_balance: number | null
+          phone: string
+          pin_hash: string
+          profile_type: string
+          referral_code: string | null
+          referred_by: string | null
+        }
+        Insert: {
+          community_id?: string | null
+          created_at?: string | null
+          id?: string
+          miles_balance?: number | null
+          phone: string
+          pin_hash: string
+          profile_type: string
+          referral_code?: string | null
+          referred_by?: string | null
+        }
+        Update: {
+          community_id?: string | null
+          created_at?: string | null
+          id?: string
+          miles_balance?: number | null
+          phone?: string
+          pin_hash?: string
+          profile_type?: string
+          referral_code?: string | null
+          referred_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "users_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
