@@ -1,4 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Hop as Home, Award, User } from 'lucide-react';
+import { Rugby } from './Rugby';
 import { type Theme } from '../lib/theme';
 
 interface BottomNavProps {
@@ -6,10 +8,10 @@ interface BottomNavProps {
 }
 
 const tabs = [
-  { icon: '\uD83C\uDFE0', label: 'Home', path: '/home' },
-  { icon: '\uD83D\uDC2C', label: 'Wallet', path: '/wallet' },
-  { icon: '\uD83C\uDFC9', label: 'Community', path: '/community' },
-  { icon: '\uD83D\uDC64', label: 'Profile', path: '/profile' },
+  { icon: Home, label: 'Home', path: '/home' },
+  { icon: Award, label: 'My Miles', path: '/wallet' },
+  { icon: Rugby, label: 'Community', path: '/community' },
+  { icon: User, label: 'Profile', path: '/profile' },
 ];
 
 export default function BottomNav({ theme }: BottomNavProps) {
@@ -31,6 +33,8 @@ export default function BottomNav({ theme }: BottomNavProps) {
     >
       {tabs.map((tab) => {
         const active = location.pathname === tab.path;
+        const Icon = tab.icon;
+        const isRugby = tab.label === 'Community';
         return (
           <button
             key={tab.path}
@@ -50,7 +54,11 @@ export default function BottomNav({ theme }: BottomNavProps) {
               gap: 2,
             }}
           >
-            <span style={{ fontSize: 20 }}>{tab.icon}</span>
+            <Icon
+              size={20}
+              strokeWidth={active ? 2.2 : 1.5}
+              style={isRugby ? { transform: 'rotate(45deg)' } : undefined}
+            />
             <span style={{ fontWeight: active ? 600 : 400 }}>{tab.label}</span>
           </button>
         );
