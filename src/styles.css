@@ -61,6 +61,13 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme inline {
+  --color-impala: var(--impala);
+  --color-impala-foreground: var(--impala-foreground);
+  --color-soul: var(--soul);
+  --color-soul-foreground: var(--soul-foreground);
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -96,6 +103,16 @@
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
 }
+
+  /* AddVal brand tokens (hex equivalents kept as comments)
+     Impala red  #D41E28
+     Soul purple #6C3483 */
+  :root {
+    --impala: oklch(0.553 0.214 27.5);
+    --impala-foreground: oklch(1 0 0);
+    --soul: oklch(0.418 0.155 322);
+    --soul-foreground: oklch(1 0 0);
+  }
 
 .dark {
   --background: oklch(0.129 0.042 264.695);
