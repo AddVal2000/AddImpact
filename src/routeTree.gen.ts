@@ -9,13 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PerksRouteImport } from './routes/perks'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as MilesRouteImport } from './routes/miles'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PurchaseSkuCodeRouteImport } from './routes/purchase.$skuCode'
 
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerksRoute = PerksRouteImport.update({
+  id: '/perks',
+  path: '/perks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MilesRoute = MilesRouteImport.update({
+  id: '/miles',
+  path: '/miles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -28,44 +47,108 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PurchaseSkuCodeRoute = PurchaseSkuCodeRouteImport.update({
+  id: '/purchase/$skuCode',
+  path: '/purchase/$skuCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
+  '/miles': typeof MilesRoute
   '/onboarding': typeof OnboardingRoute
+  '/perks': typeof PerksRoute
+  '/profile': typeof ProfileRoute
+  '/purchase/$skuCode': typeof PurchaseSkuCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
+  '/miles': typeof MilesRoute
   '/onboarding': typeof OnboardingRoute
+  '/perks': typeof PerksRoute
+  '/profile': typeof ProfileRoute
+  '/purchase/$skuCode': typeof PurchaseSkuCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
+  '/miles': typeof MilesRoute
   '/onboarding': typeof OnboardingRoute
+  '/perks': typeof PerksRoute
+  '/profile': typeof ProfileRoute
+  '/purchase/$skuCode': typeof PurchaseSkuCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/home'
+    | '/miles'
+    | '/onboarding'
+    | '/perks'
+    | '/profile'
+    | '/purchase/$skuCode'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/onboarding'
-  id: '__root__' | '/' | '/home' | '/onboarding'
+  to:
+    | '/'
+    | '/home'
+    | '/miles'
+    | '/onboarding'
+    | '/perks'
+    | '/profile'
+    | '/purchase/$skuCode'
+  id:
+    | '__root__'
+    | '/'
+    | '/home'
+    | '/miles'
+    | '/onboarding'
+    | '/perks'
+    | '/profile'
+    | '/purchase/$skuCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRoute
+  MilesRoute: typeof MilesRoute
   OnboardingRoute: typeof OnboardingRoute
+  PerksRoute: typeof PerksRoute
+  ProfileRoute: typeof ProfileRoute
+  PurchaseSkuCodeRoute: typeof PurchaseSkuCodeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perks': {
+      id: '/perks'
+      path: '/perks'
+      fullPath: '/perks'
+      preLoaderRoute: typeof PerksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/miles': {
+      id: '/miles'
+      path: '/miles'
+      fullPath: '/miles'
+      preLoaderRoute: typeof MilesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -82,24 +165,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/purchase/$skuCode': {
+      id: '/purchase/$skuCode'
+      path: '/purchase/$skuCode'
+      fullPath: '/purchase/$skuCode'
+      preLoaderRoute: typeof PurchaseSkuCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRoute,
+  MilesRoute: MilesRoute,
   OnboardingRoute: OnboardingRoute,
+  PerksRoute: PerksRoute,
+  ProfileRoute: ProfileRoute,
+  PurchaseSkuCodeRoute: PurchaseSkuCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
