@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import OnboardingWizard from "@/components/OnboardingWizard";
-import { supabase } from "@/integrations/supabase/client";
 import { setSession } from "@/lib/session";
+import { signupUser } from "@/lib/onboarding.functions";
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({ meta: [{ title: "Get started — AddVal" }] }),
@@ -16,6 +17,7 @@ function genReferral() {
 function OnboardingPage() {
   const navigate = useNavigate();
   const [err, setErr] = useState("");
+  const signup = useServerFn(signupUser);
 
   const handleComplete = async (data: {
     phone: string;
@@ -24,24 +26,17 @@ function OnboardingPage() {
   }) => {
     setErr("");
     try {
-      const { data: community, error: cErr } = await supabase
-        .from("communities").select("id").eq("slug", data.communitySlug).maybeSingle();
-      if (cErr || !community) throw new Error(cErr?.message ?? "Community not found");
-
-      const { data: user, error } = await supabase
-        .from("users")
-        .insert({
+      const result = await signup({
+        data: {
           phone: data.phone,
-          pin_hash: "MOCK_HASH",
-          profile_type: data.profileType,
-          community_id: community.id,
-          referral_code: genReferral(),
-          miles_balance: 0,
-        })
-        .select("id").single();
-      if (error || !user) throw new Error(error?.message ?? "Sign up failed");
-
-      setSession(user.id, data.communitySlug);
+          profileType: data.profileType,
+          communitySlug: data.communitySlug,
+          pinHash: "MOCK_HASH",
+          referralCode: genReferral(),
+        },
+      });
+      if (!result.ok) throw new Error(result.error);
+      setSession(result.userId, data.communitySlug);
       navigate({ to: "/home", replace: true });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Sign up failed");
