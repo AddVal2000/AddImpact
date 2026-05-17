@@ -5,6 +5,7 @@ import CelebrationOverlay from "@/components/CelebrationOverlay";
 import { supabase } from "@/integrations/supabase/client";
 import { getUserId, getCommunitySlug } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
+import { processTransaction, type TransactionResult } from "@/services/transactionService";
 
 export const Route = createFileRoute("/purchase/$skuCode")({
   head: () => ({ meta: [{ title: "Confirm top-up — AddVal" }] }),
@@ -29,11 +30,7 @@ function PurchaseScreen() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
   const [celebrationOpen, setCelebrationOpen] = useState(false);
-  const [celebrationResult, setCelebrationResult] = useState<{
-    sku_value?: string; sku_value_unit?: string;
-    partner_share?: number; miles_earned?: number;
-    new_miles_balance?: number; new_raised_kes?: number;
-  } | null>(null);
+  const [celebrationResult, setCelebrationResult] = useState<TransactionResult | null>(null);
 
   useEffect(() => {
     if (!userId || !slug) {
@@ -67,35 +64,21 @@ function PurchaseScreen() {
   const handlePurchase = async () => {
     if (!sku || !userId || !slug) return;
     setLoading(true);
+    // R4: randomness lives in the UI handler, not in services.
     const transaction_reference = crypto.randomUUID();
-    try {
-      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-      const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/process-transaction`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${SUPABASE_ANON}`,
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          sku_code: skuCode,
-          community_slug: slug,
-          transaction_reference,
-        }),
-      });
-      const data = await res.json();
-      setLoading(false);
-      if (!res.ok) {
-        showToast("Something went wrong. Please try again.");
-        return;
-      }
-      setCelebrationResult(data);
-      setCelebrationOpen(true);
-    } catch {
-      setLoading(false);
-      showToast("Network error. Please try again.");
+    const result = await processTransaction({
+      user_id: userId,
+      sku_code: skuCode,
+      community_slug: slug,
+      transaction_reference,
+    });
+    setLoading(false);
+    if (!result.success) {
+      showToast(result.error ?? "Something went wrong. Please try again.");
+      return;
     }
+    setCelebrationResult(result);
+    setCelebrationOpen(true);
   };
 
   if (!sku) {
