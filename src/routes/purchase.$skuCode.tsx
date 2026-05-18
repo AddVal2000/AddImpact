@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router"
 import { useEffect, useState } from "react";
 import { ChevronLeft, Heart, Zap } from "lucide-react";
 import CelebrationOverlay from "@/components/CelebrationOverlay";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { getUserId, getCommunitySlug } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
 import { processTransaction, type TransactionResult } from "@/services/transactionService";
