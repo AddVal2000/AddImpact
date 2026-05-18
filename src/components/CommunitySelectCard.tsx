@@ -1,15 +1,15 @@
 type CardProps = {
   primary: string;
-  slug: "impala-rfc" | "soul-sisters";
+  slug: "impala-rugby" | "soul-sisters";
   name: string;
   tagline: string;
   supporterCount?: number;
   showStripe?: boolean;
-  onSelect: (slug: "impala-rfc" | "soul-sisters") => void;
+  onSelect: (slug: "impala-rugby" | "soul-sisters") => void;
 };
 
 const CTA: Record<string, string> = {
-  "impala-rfc": "Back the Gazelles →",
+  "impala-rugby": "Back the Gazelles →",
   "soul-sisters": "Join the Sisterhood →",
 };
 
@@ -57,14 +57,14 @@ export default function CommunitySelectCard({
 export function CommunitySelectScreen({
   onSelect,
 }: {
-  onSelect: (slug: "impala-rfc" | "soul-sisters") => void;
+  onSelect: (slug: "impala-rugby" | "soul-sisters") => void;
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
       <CommunitySelectCard
         primary="#D41E28"
-        slug="impala-rfc"
-        name="Impala RFC"
+        slug="impala-rugby"
+        name="Impala Rugby"
         tagline="The Gazelles · Roans · Swara"
         showStripe
         onSelect={onSelect}

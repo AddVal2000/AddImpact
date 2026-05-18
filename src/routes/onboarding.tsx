@@ -22,7 +22,7 @@ function OnboardingPage() {
   const handleComplete = async (data: {
     phone: string;
     profileType: string;
-    communitySlug: "impala-rfc" | "soul-sisters";
+    communitySlug: "impala-rugby" | "soul-sisters";
   }) => {
     setErr("");
     try {

@@ -3,7 +3,7 @@ import { Heart, Zap } from "lucide-react";
 export const impalaActiveTheme = {
   primary: "#D41E28",
   mode: "impala" as const,
-  communityName: "Impala RFC",
+  communityName: "Impala Rugby",
   ctaVerb: "Back",
   showStripe: true,
 };
@@ -72,7 +72,9 @@ export default function HeroCard({ theme, sku, onPress }: Props) {
           className="w-full font-bold py-[13px] rounded-xl mt-4 bg-white"
           style={{ color: theme.primary }}
         >
-          {theme.ctaVerb} the {theme.communityName} — Buy Now
+          {theme.mode === "soul"
+            ? "Support the Sisterhood — Buy Now"
+            : "Impala Time — Buy Now"}
         </button>
       </div>
     </div>

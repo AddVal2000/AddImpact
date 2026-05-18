@@ -5,7 +5,7 @@ export const getCommunitySlug = () =>
   (typeof window === "undefined"
     ? null
     : (localStorage.getItem("addval_community_slug") as
-        | "impala-rfc"
+        | "impala-rugby"
         | "soul-sisters"
         | null));
 

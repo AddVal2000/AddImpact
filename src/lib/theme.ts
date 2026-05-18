@@ -9,7 +9,7 @@ export type Theme = {
 export const impalaTheme: Theme = {
   primary: "#D41E28",
   mode: "impala",
-  communityName: "Impala RFC",
+  communityName: "Impala Rugby",
   ctaVerb: "Back",
   showStripe: true,
 };

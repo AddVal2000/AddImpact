@@ -4,10 +4,11 @@ import HeroCard from "@/components/HeroCard";
 import SafaricomStyleCluster from "@/components/SafaricomStyleCluster";
 import MilesProgressTracker from "@/components/MilesProgressTracker";
 import RebrandedBottomNav from "@/components/RebrandedBottomNav";
-import { supabase } from "@/lib/supabaseClient";
 import { getUserId, getCommunitySlug } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
 import { deriveTier } from "@/lib/tiers";
+import { getCommunity, getActiveSkus } from "@/services/communityService";
+import { getUserById } from "@/services/userService";
 
 export const Route = createFileRoute("/home")({
   head: () => ({ meta: [{ title: "Home — AddVal" }] }),
@@ -52,37 +53,27 @@ function HomeScreen() {
       return;
     }
     (async () => {
-      const sb = supabase as unknown as {
-        from: (t: string) => any;
-      };
-      const skusPromise = sb
-        .from("skus")
-        .select("*")
-        .eq("active", true)
-        .order("is_hero", { ascending: false })
-        .order("price_kes", { ascending: true })
-        .then((r: { data: Sku[] | null }) => r, () => ({ data: [] as Sku[] }));
-
       const [u, c, s] = await Promise.all([
-        supabase.from("users").select("miles_balance, referral_code").eq("id", userId).maybeSingle(),
-        supabase.from("communities").select("*").eq("slug", slug).maybeSingle(),
-        skusPromise,
+        getUserById(userId),
+        getCommunity(slug),
+        getActiveSkus(),
       ]);
-      setUser({
-        miles_balance: u.data?.miles_balance ?? 0,
-        referral_code: u.data?.referral_code ?? "",
-      });
+      setUser(
+        u
+          ? { miles_balance: u.miles_balance, referral_code: u.referral_code }
+          : null,
+      );
       setCommunity(
-        c.data
+        c
           ? {
-              name: c.data.name,
-              raised_kes: Number(c.data.raised_kes ?? 0),
-              goal_kes: Number(c.data.goal_kes ?? 0),
-              goal_label: c.data.goal_label ?? null,
+              name: c.name,
+              raised_kes: Number(c.raised_kes ?? 0),
+              goal_kes: Number(c.goal_kes ?? 0),
+              goal_label: c.goal_label ?? null,
             }
           : null,
       );
-      setSkus((s as { data: Sku[] | null })?.data ?? []);
+      setSkus((s ?? []) as unknown as Sku[]);
       setLoading(false);
     })();
   }, [userId, slug, navigate]);
@@ -112,7 +103,7 @@ function HomeScreen() {
           )}
         </header>
 
-        {loading ? (
+        {loading || !user ? (
           <>
             <div className="w-full h-44 bg-gray-100 rounded-2xl animate-pulse mb-4" />
             <div className="h-16 bg-gray-50 rounded-xl animate-pulse mb-2" />
