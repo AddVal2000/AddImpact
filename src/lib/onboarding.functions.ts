@@ -9,7 +9,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 const SignupSchema = z.object({
   phone: z.string().min(8).max(20),
   profileType: z.string().min(1).max(40),
-  communitySlug: z.enum(["impala-rfc", "soul-sisters"]),
+  communitySlug: z.enum(["impala-rugby", "soul-sisters"]),
   pinHash: z.string().min(1).max(128),
   referralCode: z.string().min(4).max(16),
 });
@@ -17,10 +17,13 @@ const SignupSchema = z.object({
 export const signupUser = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => SignupSchema.parse(input))
   .handler(async ({ data }) => {
+    // Frontend slug → DB slug translation (DB schema retains legacy 'impala-rfc').
+    const dbSlug =
+      data.communitySlug === "impala-rugby" ? "impala-rfc" : data.communitySlug;
     const { data: community, error: cErr } = await supabaseAdmin
       .from("communities")
       .select("id")
-      .eq("slug", data.communitySlug)
+      .eq("slug", dbSlug)
       .maybeSingle();
     if (cErr || !community) {
       return { ok: false as const, error: "Community not found" };

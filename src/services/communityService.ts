@@ -27,10 +27,12 @@ export type Sku = {
 };
 
 export async function getCommunity(slug: string): Promise<Community | null> {
+  // Translate frontend slug 'impala-rugby' → DB slug 'impala-rfc' (no schema change).
+  const dbSlug = slug === "impala-rugby" ? "impala-rfc" : slug;
   const { data, error } = await supabase
     .from("communities")
     .select("*")
-    .eq("slug", slug)
+    .eq("slug", dbSlug)
     .eq("active", true)
     .single();
   if (error) return null;
