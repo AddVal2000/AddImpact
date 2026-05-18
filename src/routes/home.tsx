@@ -4,7 +4,7 @@ import HeroCard from "@/components/HeroCard";
 import SafaricomStyleCluster from "@/components/SafaricomStyleCluster";
 import MilesProgressTracker from "@/components/MilesProgressTracker";
 import RebrandedBottomNav from "@/components/RebrandedBottomNav";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { getUserId, getCommunitySlug } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
 import { deriveTier } from "@/lib/tiers";
