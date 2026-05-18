@@ -7,7 +7,7 @@ import RebrandedBottomNav from "@/components/RebrandedBottomNav";
 import { getUserId, getCommunitySlug } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
 import { deriveTier } from "@/lib/tiers";
-import { getCommunity, getActiveSkus, type Sku as ServiceSku } from "@/services/communityService";
+import { getCommunity, getActiveSkus } from "@/services/communityService";
 import { getUserById } from "@/services/userService";
 
 export const Route = createFileRoute("/home")({
@@ -103,7 +103,7 @@ function HomeScreen() {
           )}
         </header>
 
-        {loading ? (
+        {loading || !user ? (
           <>
             <div className="w-full h-44 bg-gray-100 rounded-2xl animate-pulse mb-4" />
             <div className="h-16 bg-gray-50 rounded-xl animate-pulse mb-2" />
