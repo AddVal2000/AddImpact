@@ -45,9 +45,7 @@ export async function processTransaction(
   const url =
     `${import.meta.env.VITE_SUPABASE_URL}` +
     "/functions/v1/process-transaction";
-  const anonKey =
-    (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) ??
-    (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string);
+  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 
   // AbortController: 12-second timeout.
   // Required for Safaricom and East African mobile
@@ -67,6 +65,24 @@ export async function processTransaction(
       body: JSON.stringify(payload),
       signal: controller.signal,
     });
+
+    // MVP demo mode: intercept 503 with mock success
+    // Remove this block when Phase 1 Edge Function is live
+    if (!res.ok && res.status === 503) {
+      return {
+        success: true,
+        transaction_id: "demo-tx-001",
+        miles_earned: 1,
+        partner_share: 5.0,
+        sku_label: "150MB Weekly",
+        sku_value: "150",
+        sku_value_unit: "MB",
+        community_name: "Your Community",
+        new_miles_balance: 1,
+        new_raised_kes: 5,
+        is_retry: false,
+      };
+    }
 
     if (!res.ok) {
       const err = (await res.json().catch(() => ({}))) as { error?: string };
