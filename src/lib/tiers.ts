@@ -1,5 +1,5 @@
 export function deriveTier(miles: number, slug: string | null) {
-  if (slug === "impala-rfc") {
+  if (slug === "impala-rugby") {
     if (miles >= 500) return { tier: "Impala Legend", next: null, nextAt: 500 };
     if (miles >= 200) return { tier: "Gold Gazelle", next: "Impala Legend", nextAt: 500 };
     if (miles >= 50) return { tier: "Silver Gazelle", next: "Gold Gazelle", nextAt: 200 };
