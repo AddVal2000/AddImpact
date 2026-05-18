@@ -207,7 +207,7 @@ function PurchaseScreen() {
           onShare={() => {
             const msg =
               slug === "impala-rugby"
-                ? `I just backed the Gazelles on AddVal! My airtime top-up sends a cut to Impala RFC — no extra cost. Join me: addval.app #ImpalaTime`
+                ? `I just backed the Gazelles on AddVal! My airtime top-up sends a cut to Impala Rugby — no extra cost. Join me: addval.app #ImpalaTime`
                 : `My top-ups now support Soul Sisters Nairobi. No extra spend — real sisterhood impact. Join here: addval.app`;
             window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
           }}
