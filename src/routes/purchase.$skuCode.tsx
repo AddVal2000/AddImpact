@@ -2,10 +2,11 @@ import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router"
 import { useEffect, useState } from "react";
 import { ChevronLeft, Heart, Zap } from "lucide-react";
 import CelebrationOverlay from "@/components/CelebrationOverlay";
-import { supabase } from "@/lib/supabaseClient";
 import { getUserId, getCommunitySlug } from "@/lib/session";
 import { getTheme } from "@/lib/theme";
 import { processTransaction, type TransactionResult } from "@/services/transactionService";
+import { getSkuByCode, getCommunity } from "@/services/communityService";
+import { getUserById } from "@/services/userService";
 
 export const Route = createFileRoute("/purchase/$skuCode")({
   head: () => ({ meta: [{ title: "Confirm top-up — AddVal" }] }),
@@ -28,6 +29,7 @@ function PurchaseScreen() {
   const [community, setCommunity] = useState<{ name: string } | null>(null);
   const [mpesaNumber, setMpesaNumber] = useState("");
   const [loading, setLoading] = useState(false);
+  const [bootLoading, setBootLoading] = useState(true);
   const [toast, setToast] = useState("");
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const [celebrationResult, setCelebrationResult] = useState<TransactionResult | null>(null);
@@ -38,19 +40,24 @@ function PurchaseScreen() {
       return;
     }
     (async () => {
-      const sb = supabase as unknown as { from: (t: string) => any };
-      const skuPromise = sb
-        .from("skus").select("*").eq("sku_code", skuCode).maybeSingle()
-        .then((r: { data: Sku | null }) => r, () => ({ data: null }));
-
       const [s, c, u] = await Promise.all([
-        skuPromise,
-        supabase.from("communities").select("name").eq("slug", slug).maybeSingle(),
-        supabase.from("users").select("phone").eq("id", userId).maybeSingle(),
+        getSkuByCode(skuCode),
+        getCommunity(slug),
+        getUserById(userId),
       ]);
-      setSku((s as { data: Sku | null }).data);
-      setCommunity(c.data ? { name: c.data.name } : null);
-      if (u.data?.phone) setMpesaNumber(u.data.phone);
+      if (s) {
+        setSku({
+          sku_code: s.sku_code,
+          label: s.label,
+          price_kes: s.price_kes,
+          value: s.value,
+          value_unit: s.value_unit,
+          ttl_hours: s.ttl_hours,
+        });
+      }
+      if (c) setCommunity({ name: c.name });
+      if (u?.phone) setMpesaNumber(u.phone);
+      setBootLoading(false);
     })();
   }, [skuCode, userId, slug, navigate]);
 
@@ -80,6 +87,19 @@ function PurchaseScreen() {
     setCelebrationResult(result);
     setCelebrationOpen(true);
   };
+
+  if (bootLoading) {
+    return (
+      <main className="min-h-screen bg-white px-5 pt-6 pb-10">
+        <div className="mx-auto max-w-md">
+          <div className="h-6 w-24 bg-gray-100 rounded animate-pulse mb-6" />
+          <div className="h-44 bg-gray-100 rounded-2xl animate-pulse mb-6" />
+          <div className="h-12 bg-gray-100 rounded-2xl animate-pulse mb-4" />
+          <div className="h-14 bg-gray-100 rounded-2xl animate-pulse" />
+        </div>
+      </main>
+    );
+  }
 
   if (!sku) {
     return (
@@ -154,7 +174,11 @@ function PurchaseScreen() {
           {loading && (
             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
           )}
-          {loading ? "Processing..." : `Pay KES ${sku.price_kes} via M-Pesa`}
+          {loading
+            ? "Processing..."
+            : slug === "soul-sisters"
+              ? "Sisterhood — Confirm Top-up"
+              : "Impala Time — Confirm Top-up"}
         </button>
 
         {toast && (
@@ -182,7 +206,7 @@ function PurchaseScreen() {
           }}
           onShare={() => {
             const msg =
-              slug === "impala-rfc"
+              slug === "impala-rugby"
                 ? `I just backed the Gazelles on AddVal! My airtime top-up sends a cut to Impala RFC — no extra cost. Join me: addval.app #ImpalaTime`
                 : `My top-ups now support Soul Sisters Nairobi. No extra spend — real sisterhood impact. Join here: addval.app`;
             window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
