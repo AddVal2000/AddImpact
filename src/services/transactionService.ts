@@ -15,6 +15,12 @@ export type TransactionPayload = {
   //   Generation stays in the UI handler to keep
   //   this service pure and deterministic. (R4)
   transaction_reference: string;
+  // Optional enrichment fields passed from UI
+  sku_price?: number;
+  sku_label?: string;
+  sku_value?: string;
+  sku_value_unit?: string;
+  community_name?: string;
 };
 
 export type TransactionResult = {
@@ -66,9 +72,9 @@ export async function processTransaction(
       signal: controller.signal,
     });
 
-    // MVP demo mode: intercept 503 with mock success
+    // MVP demo mode: intercept 503/404 with mock success
     // Remove this block when Phase 1 Edge Function is live
-    if (!res.ok && res.status === 503) {
+    if (!res.ok && (res.status === 503 || res.status === 404)) {
       return {
         success: true,
         transaction_id: "demo-tx-001",

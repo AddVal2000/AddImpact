@@ -43,6 +43,17 @@ export const signupUser = createServerFn({ method: "POST" })
       .single();
 
     if (error || !user) {
+      // Handle duplicate phone (PostgreSQL error code 23505)
+      if (error && (error as { code?: string }).code === "23505") {
+        const { data: existingUser } = await supabaseAdmin
+          .from("users")
+          .select("id")
+          .eq("phone", data.phone)
+          .maybeSingle();
+        if (existingUser) {
+          return { ok: true as const, userId: existingUser.id as string, existing: true };
+        }
+      }
       return { ok: false as const, error: error?.message ?? "Sign up failed" };
     }
     return { ok: true as const, userId: user.id as string };
